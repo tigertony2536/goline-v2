@@ -2,22 +2,34 @@ package model
 
 import (
 	"database/sql"
+	"fmt"
 	"log"
 
 	_ "github.com/mattn/go-sqlite3"
+	"github.com/tigertony2536/go-line-notify/config"
 )
 
-type Notification struct {
-	ID      int
-	Message string
-	Date    string
-	Time    string
+var (
+	db  *DB
+	cfg config.Config
+)
+
+func init() {
+	cfg = config.GetConfig()
+	db = GetDB(cfg.DB)
 }
 
-type NotiGroup struct {
-	Start         string
-	Stop          string
-	Notifications []Notification
+type Task struct {
+	ID   int
+	Name string
+	Date string
+	Time string
+}
+
+type TaskGroup struct {
+	Start string
+	Stop  string
+	Tasks []Task
 }
 
 type DB struct {
@@ -36,8 +48,9 @@ func GetDB(sc string) *DB {
 	return &DB{db}
 }
 
-func (db *DB) InsertNotification(noti Notification) (int, error) {
-	result, err := db.Exec(`INSERT INTO notify(message, date, time) VALUES(?,?,?);`, noti.Message, noti.Date, noti.Time)
+func InsertTask(taskName, date, time string) (int, error) {
+	task := Task{Name: taskName, Date: date, Time: time}
+	result, err := db.Exec(`INSERT INTO notify(message, date, time) VALUES(?,?,?);`, task.Name, task.Date, task.Time)
 	if err != nil {
 		return 0, err
 	}
@@ -45,38 +58,66 @@ func (db *DB) InsertNotification(noti Notification) (int, error) {
 	if err != nil {
 		return 0, err
 	}
-
+	fmt.Println("Insert the task successfully")
 	return int(id), nil
 }
 
-func (db *DB) GetByID(id int) (Notification, error) {
+func UpdateTask(taskId int, taskName, date, time string) (bool, error) {
+	task, err := GetByID(taskId)
+	if err != nil {
+		return false, err
+	}
+	if taskName != "" {
+		task.Name = taskName
+	}
+	if date != "" {
+		task.Date = date
+	}
+	if time != "" {
+		task.Time = time
+	}
+
+	result, err := db.Exec(`UPDATE notify SET id=? taskname=? date=? time=? WHERE id=?;`, taskId, task.Name, task.Date, task.Time)
+	if err != nil {
+		return false, err
+	}
+	n, err := result.RowsAffected()
+	if err == nil && n > 0 {
+		return true, nil
+	} else {
+		return false, err
+	}
+
+}
+
+func GetByID(id int) (Task, error) {
 	row := db.QueryRow("SELECT * FROM notify WHERE id=?;", id)
 
-	m := Notification{}
-	err := row.Scan(&m.ID, &m.Message, &m.Date, &m.Time)
+	m := Task{}
+	err := row.Scan(&m.ID, &m.Name, &m.Date, &m.Time)
 	if err != nil {
-		return Notification{}, err
+		return Task{}, err
 	}
 	return m, nil
 }
 
-func (db *DB) GetByDate(start, end string) (NotiGroup, error) {
-	result := NotiGroup{start, end, nil}
+func GetByDate(start, end string) (TaskGroup, error) {
+	result := TaskGroup{start, end, nil}
 	rows, err := db.Query("SELECT * FROM notify WHERE date BETWEEN ? AND ?;", start, end)
 	if err != nil {
 		return result, err
 	}
 
-	data := []Notification{}
+	data := []Task{}
 	defer rows.Close()
 	for rows.Next() {
-		noti := Notification{}
-		err := rows.Scan(&noti.ID, &noti.Message, &noti.Date, &noti.Time)
+		noti := Task{}
+		err := rows.Scan(&noti.ID, &noti.Name, &noti.Date, &noti.Time)
 		if err != nil {
 			return result, err
 		}
 		data = append(data, noti)
 	}
-	result.Notifications = data
+	result.Tasks = data
 	return result, nil
 }

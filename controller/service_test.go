@@ -16,7 +16,7 @@ func TestGetWeeklyNoti(t *testing.T) {
 
 		notiID := []int{}
 
-		for _, n := range noti.Notifications {
+		for _, n := range noti.Tasks {
 			notiID = append(notiID, n.ID)
 		}
 

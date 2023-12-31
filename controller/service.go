@@ -32,7 +32,7 @@ func getWeekDay() (time.Time, time.Time) {
 	return start, end
 }
 
-func SendNotification(noti model.NotiGroup) (string, error) {
+func SendNotification(noti model.TaskGroup) (string, error) {
 	v := url.Values{}
 	v.Set("message", Format(noti))
 	client := &http.Client{}
@@ -59,10 +59,10 @@ func SendNotification(noti model.NotiGroup) (string, error) {
 	return s, nil
 }
 
-func GetDailyNoti() (model.NotiGroup, error) {
+func GetDailyNoti() (model.TaskGroup, error) {
 	today := time.Now().Format(time.DateOnly)
 
-	noti, err := db.GetByDate(today, today)
+	noti, err := model.GetByDate(today, today)
 	if err != nil {
 		return noti, err
 	}
@@ -70,10 +70,10 @@ func GetDailyNoti() (model.NotiGroup, error) {
 	return noti, nil
 }
 
-func GetWeeklyNoti() (model.NotiGroup, error) {
+func GetWeeklyNoti() (model.TaskGroup, error) {
 	start, end := getWeekDay()
 
-	noti, err := db.GetByDate(start.Format(time.DateOnly), end.Format(time.DateOnly))
+	noti, err := model.GetByDate(start.Format(time.DateOnly), end.Format(time.DateOnly))
 	if err != nil {
 		return noti, err
 	}
@@ -81,11 +81,11 @@ func GetWeeklyNoti() (model.NotiGroup, error) {
 	return noti, nil
 }
 
-func Format(noti model.NotiGroup) string {
+func Format(noti model.TaskGroup) string {
 	s := ""
 	s = s + "From: " + noti.Start + " " + "To: " + noti.Stop + "\n"
-	for _, n := range noti.Notifications {
-		s = s + n.Date + " " + n.Time + " " + n.Message + "\n"
+	for _, n := range noti.Tasks {
+		s = s + n.Date + " " + n.Time + " " + n.Name + "\n"
 	}
 	return s
 }

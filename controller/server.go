@@ -4,6 +4,8 @@ import (
 	"log"
 	"net/http"
 	"text/template"
+
+	"github.com/tigertony2536/go-line-notify/model"
 )
 
 var (
@@ -33,7 +35,7 @@ func (s *Server) Start() error {
 func (s *Server) Index(w http.ResponseWriter, r *http.Request) {
 	start := r.FormValue("start")
 	end := r.FormValue("end")
-	data, err := db.GetByDate(start, end)
+	data, err := model.GetByDate(start, end)
 	if err != nil {
 		log.Fatal(err)
 	}

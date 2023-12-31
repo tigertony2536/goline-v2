@@ -24,23 +24,18 @@ func TestGetDB(t *testing.T) {
 }
 
 func TestInsertNotification(t *testing.T) {
-	cfg := config.GetConfig()
-	db := model.GetDB(cfg.DB)
 	tm := time.Now().Format(time.TimeOnly)
 
-	noti := model.Notification{
-		Message: "ส่งคลิปจิตอาสา",
-		Date:    "2023-12-30",
-		Time:    tm,
-	}
+	name := "ส่งคลิปจิตอาสา"
+	date := "2023-12-30"
 
-	id, err := db.InsertNotification(noti)
+	id, err := model.InsertTask(name, date, tm)
 
-	expectedNoti, _ := db.GetByID(id)
+	expectedNoti, _ := model.GetByID(id)
 
-	assert.Equalf(t, expectedNoti.Message, noti.Message, "Expect %q got %q", expectedNoti.Message, noti.Message)
-	assert.Equalf(t, expectedNoti.Date, noti.Date, "Expect %q got %q", expectedNoti.Date, noti.Date)
-	assert.Equalf(t, expectedNoti.Time, noti.Time, "Expect %q got %q", expectedNoti.Time, noti.Time)
+	assert.Equalf(t, expectedNoti.Name, name, "Expect %q got %q", expectedNoti.Name, name)
+	assert.Equalf(t, expectedNoti.Date, date, "Expect %q got %q", expectedNoti.Date, date)
+	assert.Equalf(t, expectedNoti.Time, tm, "Expect %q got %q", expectedNoti.Time, tm)
 	assert.NoError(t, err, "Insert notification to database successfully")
 
 }
@@ -65,12 +60,12 @@ func TestGetByID(t *testing.T) {
 		cfg := config.GetConfig()
 		db := model.GetDB(cfg.DB)
 
-		noti, err := db.GetByID(tc.ID)
+		noti, err := model.GetByID(tc.ID)
 
 		defer db.Close()
 
 		assert.Equalf(t, tc.ID, noti.ID, "Expected %q got %q", tc.ID, noti.ID)
-		assert.Equalf(t, tc.Message, noti.Message, "Expected %q got %q", tc.Message, noti.Message)
+		assert.Equalf(t, tc.Message, noti.Name, "Expected %q got %q", tc.Message, noti.Name)
 		assert.Equalf(t, tc.Date, noti.Date, "Expected %q got %q", tc.Date, noti.Date)
 		assert.Equalf(t, tc.Time, noti.Time, "Expected %q got %q", tc.Time, noti.Time)
 		assert.NoError(t, err, "No error")
@@ -96,18 +91,14 @@ func TestGetByDate(t *testing.T) {
 	}
 
 	t.Run(tc[0].Name, func(t *testing.T) {
-
-		cfg := config.GetConfig()
-		db := model.GetDB(cfg.DB)
-
-		noti, err := db.GetByDate(tc[0].Start, tc[0].End)
+		noti, err := model.GetByDate(tc[0].Start, tc[0].End)
 
 		notiID := []int{}
 
-		for _, n := range noti.Notifications {
+		for _, n := range noti.Tasks {
 			notiID = append(notiID, n.ID)
 		}
-		assert.Equalf(t, tc[0].ExpectedRowsNumber, len(noti.Notifications), "Expect %d of  result got %d", tc[0].ExpectedRowsNumber, len(noti.Notifications))
+		assert.Equalf(t, tc[0].ExpectedRowsNumber, len(noti.Tasks), "Expect %d of  result got %d", tc[0].ExpectedRowsNumber, len(noti.Tasks))
 		assert.Equalf(t, tc[0].ExpectedNotiID, notiID, "Expect result ID %d got %d", tc[0].ExpectedNotiID, notiID)
 		assert.NoError(t, err, "No Error")
 	})
