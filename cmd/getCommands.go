@@ -6,6 +6,7 @@ package cmd
 import (
 	"fmt"
 	"log"
+	"strconv"
 
 	"github.com/spf13/cobra"
 	"github.com/tigertony2536/go-line-notify/controller"
@@ -13,12 +14,29 @@ import (
 )
 
 // getTasksCmd represents the getTasks command
-var getTasksByDateCmd = &cobra.Command{
-	Use:   "getTasksByDate",
+var getTaskCmd = &cobra.Command{
+	Use:   "getTask",
+	Short: "Get existing tasks in app",
+	Long: `Get existing tasks in app. User have to specify criteria with subcommand
+	getTask date <YYYY-MM-DD> <YYYY-MM-DD>
+	getTask id <id>
+	getTask name <pattern>`,
+	Run: func(cmd *cobra.Command, args []string) {
+		if len(args) < 2 {
+			fmt.Println("Please specify subcommandd and arguments.")
+			fmt.Println(" -> date <YYYY-MM-DD> <YYYY-MM-DD>")
+			fmt.Println(" -> id <id>")
+			fmt.Println(" -> name <pattern>")
+		}
+	},
+}
+
+var dateCmd = &cobra.Command{
+	Use:   "date",
 	Args:  cobra.ExactArgs(2),
-	Short: "Get tasks From Date-to-Date",
-	Long: `Get Task from a specific period
-	Parameter: Start(YYYY-MM-DD),End(YYYY-MM-DD) string `,
+	Short: "Get task by date",
+	Long: `Get tasks scheduled between a specific period
+	getTask date <YYYY-MM-DD> <YYYY-MM-DD>`,
 	Run: func(cmd *cobra.Command, args []string) {
 		tasks, err := model.GetByDate(args[0], args[1])
 		if err != nil {
@@ -29,8 +47,48 @@ var getTasksByDateCmd = &cobra.Command{
 	},
 }
 
+var idCmd = &cobra.Command{
+	Use:   "id",
+	Args:  cobra.ExactArgs(1),
+	Short: "Get task by id",
+	Long: `Get tasks by task's id
+	getTask id <id>`,
+	Run: func(cmd *cobra.Command, args []string) {
+		id, err := strconv.Atoi(args[0])
+		if err != nil {
+			log.Fatal(err)
+		}
+		tasks, err := model.GetByID(id)
+		if err != nil {
+			log.Fatalln("Something wrong with query data")
+		}
+		s := controller.Format(tasks)
+		fmt.Print(s)
+	},
+}
+
+var nameCmd = &cobra.Command{
+	Use:   "name",
+	Args:  cobra.ExactArgs(1),
+	Short: "Get task by name",
+	Long: `Get tasks by task's name
+	getTask name <pattern>`,
+	Run: func(cmd *cobra.Command, args []string) {
+		tasks, err := model.GetByName(args[0])
+		if err != nil {
+			log.Fatalln("Something wrong with query data")
+		}
+		s := controller.Format(tasks)
+		fmt.Print(s)
+	},
+}
+
 func init() {
-	rootCmd.AddCommand(getTasksByDateCmd)
+	rootCmd.AddCommand(getTaskCmd)
+
+	getTaskCmd.AddCommand(dateCmd)
+	getTaskCmd.AddCommand(idCmd)
+	getTaskCmd.AddCommand(nameCmd)
 
 	// Here you will define your flags and configuration settings.
 

@@ -28,7 +28,7 @@ type Task struct {
 
 type TaskGroup struct {
 	Start string
-	Stop  string
+	End   string
 	Tasks []Task
 }
 
@@ -49,8 +49,7 @@ func GetDB(sc string) *DB {
 }
 
 func InsertTask(taskName, date, time string) (int, error) {
-	task := Task{Name: taskName, Date: date, Time: time}
-	result, err := db.Exec(`INSERT INTO notify(message, date, time) VALUES(?,?,?);`, task.Name, task.Date, task.Time)
+	result, err := db.Exec(`INSERT INTO notify(taskname, date, time) VALUES(?,?,?);`, taskName, date, time)
 	if err != nil {
 		return 0, err
 	}
@@ -63,10 +62,12 @@ func InsertTask(taskName, date, time string) (int, error) {
 }
 
 func UpdateTask(taskId int, taskName, date, time string) (bool, error) {
-	task, err := GetByID(taskId)
+	group, err := GetByID(taskId)
 	if err != nil {
 		return false, err
 	}
+	task := group.Tasks[0]
+
 	if taskName != "" {
 		task.Name = taskName
 	}
@@ -90,20 +91,45 @@ func UpdateTask(taskId int, taskName, date, time string) (bool, error) {
 
 }
 
-func GetByID(id int) (Task, error) {
+func GetByID(id int) (TaskGroup, error) {
+	result := TaskGroup{"", "", nil}
+
 	row := db.QueryRow("SELECT * FROM notify WHERE id=?;", id)
 
 	m := Task{}
 	err := row.Scan(&m.ID, &m.Name, &m.Date, &m.Time)
 	if err != nil {
-		return Task{}, err
+		return result, err
 	}
-	return m, nil
+	data := []Task{m}
+	result.Tasks = data
+	return result, nil
 }
 
 func GetByDate(start, end string) (TaskGroup, error) {
 	result := TaskGroup{start, end, nil}
 	rows, err := db.Query("SELECT * FROM notify WHERE date BETWEEN ? AND ?;", start, end)
+	if err != nil {
+		return result, err
+	}
+
+	data := []Task{}
+	defer rows.Close()
+	for rows.Next() {
+		noti := Task{}
+		err := rows.Scan(&noti.ID, &noti.Name, &noti.Date, &noti.Time)
+		if err != nil {
+			return result, err
+		}
+		data = append(data, noti)
+	}
+	result.Tasks = data
+	return result, nil
+}
+
+func GetByName(pattern string) (TaskGroup, error) {
+	result := TaskGroup{"", "", nil}
+	rows, err := db.Query(`SELECT * FROM notify WHERE taskname like CONCAT('%',?,'%');`, pattern)
 	if err != nil {
 		return result, err
 	}

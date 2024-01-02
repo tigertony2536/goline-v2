@@ -83,7 +83,7 @@ func GetWeeklyNoti() (model.TaskGroup, error) {
 
 func Format(noti model.TaskGroup) string {
 	s := ""
-	s = s + "From: " + noti.Start + " " + "To: " + noti.Stop + "\n"
+	s = s + "From: " + noti.Start + " " + "To: " + noti.End + "\n"
 	for _, n := range noti.Tasks {
 		s = s + n.Date + " " + n.Time + " " + n.Name + "\n"
 	}
