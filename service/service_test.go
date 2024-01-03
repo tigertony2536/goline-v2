@@ -7,16 +7,16 @@ import (
 	"github.com/tigertony2536/go-line-notify/service"
 )
 
-func TestGetWeeklyNoti(t *testing.T) {
+func TestGetThisWeekTasks(t *testing.T) {
 	expectRowsNumber := 5
 	expectID := []int{44, 45, 46, 48, 50}
 
 	t.Run("Test Get Daily Noti", func(t *testing.T) {
-		noti, err := service.GetWeeklyNoti()
+		noti, err := service.GetThisWeekTasks()
 
 		notiID := []int{}
 
-		for _, n := range noti {
+		for _, n := range noti.Tasks {
 			notiID = append(notiID, n.ID)
 		}
 

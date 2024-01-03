@@ -9,8 +9,8 @@ import (
 	"strconv"
 
 	"github.com/spf13/cobra"
-	"github.com/tigertony2536/go-line-notify/controller"
 	"github.com/tigertony2536/go-line-notify/model"
+	"github.com/tigertony2536/go-line-notify/service"
 )
 
 // getTasksCmd represents the getTasks command
@@ -42,7 +42,7 @@ var dateCmd = &cobra.Command{
 		if err != nil {
 			log.Fatalln("Something wrong with query data")
 		}
-		s := controller.Format(tasks)
+		s := service.Format(tasks)
 		fmt.Print(s)
 	},
 }
@@ -62,7 +62,7 @@ var idCmd = &cobra.Command{
 		if err != nil {
 			log.Fatalln("Something wrong with query data")
 		}
-		s := controller.Format(tasks)
+		s := service.Format(tasks)
 		fmt.Print(s)
 	},
 }
@@ -78,7 +78,7 @@ var nameCmd = &cobra.Command{
 		if err != nil {
 			log.Fatalln("Something wrong with query data")
 		}
-		s := controller.Format(tasks)
+		s := service.Format(tasks)
 		fmt.Print(s)
 	},
 }
