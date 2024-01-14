@@ -9,8 +9,8 @@ import (
 	"strconv"
 
 	"github.com/spf13/cobra"
-	"github.com/tigertony2536/Goline/model"
-	"github.com/tigertony2536/Goline/notiApp/notification"
+	"github.com/tigertony2536/goline/model"
+	"github.com/tigertony2536/goline/notiApp/notification"
 )
 
 // getTasksCmd represents the getTasks command

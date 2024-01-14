@@ -1,5 +1,5 @@
 #App setup
-database: D:\dev\go\go-line-notify\model\database\notifyDB.db #Your database file directory
+database: D:\dev\go\goline\model\database\notifyDB.db #Your database file directory
 linenotifyUrl: https://notify-api.line.me/api/notify
 
 #Notification time

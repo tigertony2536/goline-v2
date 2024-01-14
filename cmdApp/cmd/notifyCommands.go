@@ -8,7 +8,7 @@ import (
 	"log"
 
 	"github.com/spf13/cobra"
-	"github.com/tigertony2536/Goline/notiApp/notification"
+	"github.com/tigertony2536/goline/notiApp/notification"
 )
 
 // notifyCommandsCmd represents the notifyCommands command

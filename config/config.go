@@ -20,7 +20,7 @@ type AppConfig struct {
 }
 
 func GetSecretConfig() Config {
-	viper.AddConfigPath("D:\\dev\\go\\go-line-notify\\config")
+	viper.AddConfigPath("D:\\dev\\go\\goline\\config")
 	viper.SetConfigName("secret")
 	viper.SetConfigType("yaml")
 
@@ -36,7 +36,7 @@ func GetSecretConfig() Config {
 }
 
 func GetAppConfig() AppConfig {
-	viper.AddConfigPath("D:\\dev\\go\\go-line-notify\\config")
+	viper.AddConfigPath("D:\\dev\\go\\goline\\config")
 	viper.SetConfigName("appConfig")
 	viper.SetConfigType("yaml")
 

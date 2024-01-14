@@ -6,8 +6,8 @@ import (
 
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/stretchr/testify/assert"
-	"github.com/tigertony2536/Goline/config"
-	"github.com/tigertony2536/Goline/model"
+	"github.com/tigertony2536/goline/config"
+	"github.com/tigertony2536/goline/model"
 )
 
 func TestGetDB(t *testing.T) {

@@ -6,7 +6,7 @@ import (
 	"log"
 
 	_ "github.com/mattn/go-sqlite3"
-	"github.com/tigertony2536/Goline/config"
+	"github.com/tigertony2536/goline/config"
 )
 
 var (

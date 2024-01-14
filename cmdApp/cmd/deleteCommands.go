@@ -9,7 +9,7 @@ import (
 	"strconv"
 
 	"github.com/spf13/cobra"
-	"github.com/tigertony2536/Goline/model"
+	"github.com/tigertony2536/goline/model"
 )
 
 // deleteCommandsCmd represents the deleteCommands command

@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/tigertony2536/Goline/notiApp/notification"
+	"github.com/tigertony2536/goline/notiApp/notification"
 )
 
 func TestGetThisWeekTasks(t *testing.T) {

@@ -4,11 +4,11 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/tigertony2536/Goline/notiApp/notification"
+	"github.com/tigertony2536/goline/notiApp/notification"
 )
 
 func main() {
-	fmt.Println("Goline is running...")
+	fmt.Println("goline is running...")
 	for {
 		if notification.ValidateWeek() {
 			err := notification.NotifyWeekTasks()

@@ -11,9 +11,9 @@ import (
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use:   "go-line-notify",
+	Use:   "goline",
 	Short: "A Task Scheduler app implement with Go",
-	Long: `go-line-notify is a task scheduler app. You can create, read, 
+	Long: `goline is a task scheduler app. You can create, read, 
 	update and delete tasks. Setup time for it to send you line notifications:`,
 	PostRun: func(cmd *cobra.Command, args []string) {
 
@@ -35,13 +35,5 @@ func Execute() {
 }
 
 func init() {
-	// Here you will define your flags and configuration settings.
-	// Cobra supports persistent flags, which, if defined here,
-	// will be global for your application.
-
-	// rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.go-line-notify.yaml)")
-
-	// Cobra also supports local flags, which will only run
-	// when this action is called directly.
 	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }

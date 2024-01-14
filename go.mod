@@ -1,4 +1,4 @@
-module github.com/tigertony2536/Goline
+module github.com/tigertony2536/goline
 
 go 1.21.3
 
