@@ -1,4 +1,4 @@
-module github.com/tigertony2536/go-line-notify
+module github.com/tigertony2536/Goline
 
 go 1.21.3
 

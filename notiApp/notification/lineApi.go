@@ -7,8 +7,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/tigertony2536/go-line-notify/config"
-	"github.com/tigertony2536/go-line-notify/model"
+	"github.com/tigertony2536/Goline/config"
+	"github.com/tigertony2536/Goline/model"
 )
 
 var (

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/tigertony2536/go-line-notify/notiApp/notification"
+	"github.com/tigertony2536/Goline/notiApp/notification"
 )
 
 func main() {

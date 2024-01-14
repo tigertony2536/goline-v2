@@ -8,7 +8,7 @@ import (
 	"log"
 
 	"github.com/spf13/cobra"
-	"github.com/tigertony2536/go-line-notify/model"
+	"github.com/tigertony2536/Goline/model"
 )
 
 // insertCommandsCmd represents the insertCommands command
