@@ -8,14 +8,8 @@ import (
 )
 
 func main() {
-	// tasks, _ := notification.GetThisWeekTasks()
-	// fmt.Println(notification.Format(tasks))
-	// err := notification.NotifyWeekTasks()
-	// if err == nil {
-	// 	fmt.Println("Something wrong during notify weekly task0", err)
-	// }
+	fmt.Println("Goline is running...")
 	for {
-		fmt.Println("Goline is running...")
 		if notification.ValidateWeek() {
 			err := notification.NotifyWeekTasks()
 			if err != nil {
