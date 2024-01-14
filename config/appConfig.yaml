@@ -1,0 +1,8 @@
+#App setup
+database: D:\dev\go\go-line-notify\model\database\notifyDB.db #Your database file directory
+linenotifyUrl: https://notify-api.line.me/api/notify
+
+#Notification time
+dailyNotiTime: "22:00:00" #Time you want to get daily task from line notification
+weeklyNotiDate: "Saturday" #Day of week you want to get weekly tasks from line notification
+weeklyNotiTime: "22:00:00" #Time you want to get weekly task from line notification

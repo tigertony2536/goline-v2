@@ -60,5 +60,8 @@ $RECYCLE.BIN/
 *.vscode
 
 #config
-/config/
+/config/secret.yaml
 *.sqbpro
+
+#Others
+/diagrams
