@@ -15,7 +15,7 @@ var (
 )
 
 func init() {
-	cfg = config.GetConfig()
+	cfg = config.GetSecretConfig()
 	db = GetDB(cfg.DB)
 }
 
@@ -59,6 +59,19 @@ func InsertTask(taskName, date, time string) (int, error) {
 	}
 	fmt.Println("Insert the task successfully")
 	return int(id), nil
+}
+
+func DeleteTask(id int) error {
+
+	result, err := db.Exec(`DELETE FROM notify WHERE id=?;`, id)
+	if err != nil {
+		return err
+	}
+	if n, _ := result.RowsAffected(); int(n) != id {
+		s := fmt.Sprintf("Task id %v do not exist", id)
+		fmt.Printf("Task id %v do not exist", s)
+	}
+	return nil
 }
 
 func UpdateTask(taskId int, taskName, date, time string) (bool, error) {

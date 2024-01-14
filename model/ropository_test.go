@@ -11,7 +11,7 @@ import (
 )
 
 func TestGetDB(t *testing.T) {
-	cfg := config.GetConfig()
+	cfg := config.GetSecretConfig()
 	db := model.GetDB(cfg.DB)
 	db.Ping()
 	expectType := model.DB{}
@@ -60,7 +60,7 @@ func TestGetByID(t *testing.T) {
 
 	t.Run(tc.Name, func(t *testing.T) {
 
-		cfg := config.GetConfig()
+		cfg := config.GetSecretConfig()
 		db := model.GetDB(cfg.DB)
 
 		noti, err := model.GetByID(tc.ID)
