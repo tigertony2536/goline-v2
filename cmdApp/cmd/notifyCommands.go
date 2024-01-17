@@ -30,6 +30,42 @@ var notifyCommandsCmd = &cobra.Command{
 	},
 }
 
+var startCommandsCmd = &cobra.Command{
+	Use:   "notify",
+	Short: "Send notify to line api",
+	Long: `Send daily and weekly tasks to line chat if exist 
+	(use this command with task schelduler)`,
+	Run: func(cmd *cobra.Command, args []string) {
+		err := notification.NotifyTodayTasks()
+		if err != nil {
+			log.Fatal(err)
+		}
+		err = notification.NotifyWeekTasks()
+		if err != nil {
+			log.Fatal(err)
+		}
+		fmt.Println("Send notify successfully")
+	},
+}
+
+var stopCommandsCmd = &cobra.Command{
+	Use:   "notify",
+	Short: "Send notify to line api",
+	Long: `Send daily and weekly tasks to line chat if exist 
+	(use this command with task schelduler)`,
+	Run: func(cmd *cobra.Command, args []string) {
+		err := notification.NotifyTodayTasks()
+		if err != nil {
+			log.Fatal(err)
+		}
+		err = notification.NotifyWeekTasks()
+		if err != nil {
+			log.Fatal(err)
+		}
+		fmt.Println("Send notify successfully")
+	},
+}
+
 func init() {
 	rootCmd.AddCommand(notifyCommandsCmd)
 

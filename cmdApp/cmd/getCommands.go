@@ -83,13 +83,28 @@ var nameCmd = &cobra.Command{
 	},
 }
 
+var allCmd = &cobra.Command{
+	Use:   "all",
+	Args:  cobra.NoArgs,
+	Short: "Get all tasks",
+	Long:  `Get all tasks`,
+	Run: func(cmd *cobra.Command, args []string) {
+		tasks, err := model.GetAllTasks()
+		if err != nil {
+			log.Fatalln("Something wrong with query data: ", err)
+		}
+		s := notification.Format(tasks)
+		fmt.Print(s)
+	},
+}
+
 func init() {
 	rootCmd.AddCommand(getTaskCmd)
 
 	getTaskCmd.AddCommand(dateCmd)
 	getTaskCmd.AddCommand(idCmd)
 	getTaskCmd.AddCommand(nameCmd)
-
+	getTaskCmd.AddCommand(allCmd)
 	// Here you will define your flags and configuration settings.
 
 	// Cobra supports Persistent Flags which will work for this command
