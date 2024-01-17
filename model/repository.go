@@ -11,11 +11,11 @@ import (
 
 var (
 	db  *DB
-	cfg config.Config
+	cfg config.AppConfig
 )
 
 func init() {
-	cfg = config.GetSecretConfig()
+	cfg = config.GetAppConfig()
 	db = GetDB(cfg.DB)
 }
 
@@ -69,7 +69,7 @@ func DeleteTask(id int) error {
 	}
 	if n, _ := result.RowsAffected(); int(n) != id {
 		s := fmt.Sprintf("Task id %v do not exist", id)
-		fmt.Printf("Task id %v do not exist", s)
+		fmt.Printf("%v", s)
 	}
 	return nil
 }
@@ -143,6 +143,27 @@ func GetByDate(start, end string) (TaskGroup, error) {
 func GetByName(pattern string) (TaskGroup, error) {
 	result := TaskGroup{"", "", nil}
 	rows, err := db.Query(`SELECT * FROM notify WHERE taskname like CONCAT('%',?,'%');`, pattern)
+	if err != nil {
+		return result, err
+	}
+
+	data := []Task{}
+	defer rows.Close()
+	for rows.Next() {
+		noti := Task{}
+		err := rows.Scan(&noti.ID, &noti.Name, &noti.Date, &noti.Time)
+		if err != nil {
+			return result, err
+		}
+		data = append(data, noti)
+	}
+	result.Tasks = data
+	return result, nil
+}
+
+func GetAllTasks() (TaskGroup, error) {
+	result := TaskGroup{"", "", nil}
+	rows, err := db.Query(`SELECT * FROM notify;`)
 	if err != nil {
 		return result, err
 	}

@@ -6,6 +6,7 @@ package cmd
 import (
 	"fmt"
 	"log"
+	"os/exec"
 
 	"github.com/spf13/cobra"
 	"github.com/tigertony2536/goline/notiApp/notification"
@@ -31,43 +32,37 @@ var notifyCommandsCmd = &cobra.Command{
 }
 
 var startCommandsCmd = &cobra.Command{
-	Use:   "notify",
-	Short: "Send notify to line api",
-	Long: `Send daily and weekly tasks to line chat if exist 
-	(use this command with task schelduler)`,
+	Use:   "start",
+	Short: "Start notify app",
+	Long:  `Start notify app`,
 	Run: func(cmd *cobra.Command, args []string) {
-		err := notification.NotifyTodayTasks()
+		command1 := exec.Command("notiApp")
+		err := command1.Start()
 		if err != nil {
-			log.Fatal(err)
+			log.Fatal("something wrong during start notify app:", err)
 		}
-		err = notification.NotifyWeekTasks()
-		if err != nil {
-			log.Fatal(err)
-		}
-		fmt.Println("Send notify successfully")
+		fmt.Println("Start notify successfully")
 	},
 }
 
 var stopCommandsCmd = &cobra.Command{
-	Use:   "notify",
-	Short: "Send notify to line api",
-	Long: `Send daily and weekly tasks to line chat if exist 
-	(use this command with task schelduler)`,
+	Use:   "stop",
+	Short: "Stop notify app",
+	Long:  `Stop notify app`,
 	Run: func(cmd *cobra.Command, args []string) {
-		err := notification.NotifyTodayTasks()
+		command2 := exec.Command("taskkill", "/IM", "notiApp.exe", "/F")
+		err := command2.Run()
 		if err != nil {
-			log.Fatal(err)
+			log.Fatal("something wrong during Stop notify app:", err)
 		}
-		err = notification.NotifyWeekTasks()
-		if err != nil {
-			log.Fatal(err)
-		}
-		fmt.Println("Send notify successfully")
+		fmt.Println("Stop notify successfully")
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(notifyCommandsCmd)
+	notifyCommandsCmd.AddCommand(startCommandsCmd)
+	notifyCommandsCmd.AddCommand(stopCommandsCmd)
 
 	// Here you will define your flags and configuration settings.
 

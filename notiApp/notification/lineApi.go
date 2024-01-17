@@ -13,10 +13,12 @@ import (
 
 var (
 	appCfg config.AppConfig
+	secret config.Secret
 )
 
 func init() {
 	appCfg = config.GetAppConfig()
+	secret = config.GetSecretConfig()
 }
 
 func SendToLineApi(noti model.TaskGroup) (string, error) {
@@ -25,7 +27,7 @@ func SendToLineApi(noti model.TaskGroup) (string, error) {
 	client := &http.Client{}
 	req, err := http.NewRequest("POST", cfg.Url, strings.NewReader(v.Encode()))
 
-	token := "Bearer " + cfg.LineToken
+	token := "Bearer " + secret.LineToken
 
 	if err != nil {
 		return "", err

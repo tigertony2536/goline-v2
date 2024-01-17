@@ -9,11 +9,11 @@ import (
 )
 
 var (
-	cfg config.Config
+	cfg config.AppConfig
 )
 
 func init() {
-	cfg = config.GetSecretConfig()
+	cfg = config.GetAppConfig()
 }
 
 func getWeekDay() (time.Time, time.Time) {

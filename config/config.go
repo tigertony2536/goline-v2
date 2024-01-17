@@ -6,20 +6,20 @@ import (
 	"github.com/spf13/viper"
 )
 
-type Config struct {
+type Secret struct {
 	// Token     string `mapstructure:"token"`
-	DB        string `mapstructure:"database"`
-	Url       string `mapstructure:"linenotifyUrl"`
 	LineToken string `mapstructure:"lineToken"`
 }
 
 type AppConfig struct {
+	DB             string `mapstructure:"database"`
+	Url            string `mapstructure:"linenotifyUrl"`
 	DailyNotiTime  string `mapstructure:"dailyNotiTime"`
 	WeeklyNotiDate string `mapstructure:"weeklyNotiDate"`
 	WeeklyNotiTime string `mapstructure:"weeklyNotiTime"`
 }
 
-func GetSecretConfig() Config {
+func GetSecretConfig() Secret {
 	viper.AddConfigPath("D:\\dev\\go\\goline\\config")
 	viper.SetConfigName("secret")
 	viper.SetConfigType("yaml")
@@ -29,7 +29,7 @@ func GetSecretConfig() Config {
 		log.Fatal(err)
 	}
 	viper.MergeInConfig()
-	var config Config
+	var config Secret
 	viper.Unmarshal(&config)
 
 	return config
