@@ -1,146 +1,203 @@
 package model_test
 
 import (
+	"fmt"
 	"log"
+	"reflect"
 	"testing"
 
 	_ "github.com/mattn/go-sqlite3"
-	"github.com/stretchr/testify/assert"
 	"github.com/tigertony2536/goline/config"
 	"github.com/tigertony2536/goline/model"
 )
 
-func TestGetDB(t *testing.T) {
-	cfg := config.GetAppConfig()
-	db := model.GetDB(cfg.DB)
-	db.Ping()
-	expectType := model.DB{}
+var (
+	db  *model.DB
+	cfg config.AppConfig
+)
 
-	t.Run("get db success", func(t *testing.T) {
-		assert.IsTypef(t, &expectType, db, "Expected %T  got %T", &expectType, db)
-		assert.NoErrorf(t, db.Ping(), "Connect db successfully")
-	})
+func init() {
+	cfg = config.GetAppConfig()
+	db = model.GetDB(cfg.DB)
+}
+
+func TestGetDB(t *testing.T) {
+	err := db.Ping()
+
+	if err != nil {
+		t.Error("Can not access database")
+	}
 
 }
 
 func TestInsertTask(t *testing.T) {
-	name := "ส่งคลิปจิตอาสา"
-	date := "2023-12-30"
-	tm := "00:00:00"
-	id, err := model.InsertTask(name, date, tm)
-	if err != nil {
-		log.Fatal(err)
-	}
-	expectedNoti, err := model.GetByID(id)
-	if err != nil {
-		log.Fatal(err)
+	expect := model.Task{
+		Name: "ส่งคลิปจิตอาสา",
+		Date: "2023-12-30",
+		Time: "00:00:00",
 	}
 
-	assert.Equalf(t, expectedNoti.Tasks[0].Name, name, "Expect %q got %q", expectedNoti.Tasks[0].Name, name)
-	assert.Equalf(t, expectedNoti.Tasks[0].Date, date, "Expect %q got %q", expectedNoti.Tasks[0].Date, date)
-	assert.Equalf(t, expectedNoti.Tasks[0].Time, tm, "Expect %q got %q", expectedNoti.Tasks[0].Time, tm)
-	assert.NoError(t, err, "Insert notification to database successfully")
+	id, err := model.InsertTask(expect.Name, expect.Date, expect.Time)
+	if err != nil {
+		log.Fatal("Something wrong during insert task", err)
+	}
+	fmt.Println(id)
+
+	defer model.DeleteTask(id)
+
+	task, err := model.GetByID(id)
+	if err != nil {
+		log.Fatal("Something wrong during get task", err)
+	}
+	expect.ID = id
+
+	fmt.Println(expect)
+	fmt.Println(task.Tasks[0])
+	if !reflect.DeepEqual(expect, task.Tasks[0]) {
+		t.Error("insert task fail")
+	}
 
 }
 
 func TestGetByID(t *testing.T) {
-	tc := struct {
-		Name    string
-		ID      int
-		Message string
-		Date    string
-		Time    string
-	}{
-		Name:    "Get by ID Success",
-		ID:      29,
-		Message: "ส่งคลิปจิตอาสา",
-		Date:    "2023-12-30",
-		Time:    "22:48:52",
+	expect := model.Task{
+		Name: "ส่งคลิปจิตอาสา",
+		Date: "2023-12-30",
+		Time: "22:48:52",
 	}
 
-	t.Run(tc.Name, func(t *testing.T) {
+	id, err := model.InsertTask(expect.Name, expect.Date, expect.Time)
+	if err != nil {
+		log.Fatal("Something wrong during insert task", err)
+	}
 
-		cfg := config.GetAppConfig()
-		db := model.GetDB(cfg.DB)
+	expect.ID = id
 
-		noti, err := model.GetByID(tc.ID)
+	defer model.DeleteTask(id)
 
-		defer db.Close()
+	t.Run("get by id", func(t *testing.T) {
 
-		assert.Equalf(t, tc.ID, noti.Tasks[0].ID, "Expected %q got %q", tc.ID, noti.Tasks[0].ID)
-		assert.Equalf(t, tc.ID, noti.Tasks[0].Name, "Expected %q got %q", tc.Message, tc.ID, noti.Tasks[0].Name)
-		assert.Equalf(t, tc.ID, noti.Tasks[0].Date, "Expected %q got %q", tc.Date, tc.ID, noti.Tasks[0].Date)
-		assert.Equalf(t, tc.ID, noti.Tasks[0].Time, "Expected %q got %q", tc.Time, tc.ID, noti.Tasks[0].Time)
-		assert.NoError(t, err, "No error")
+		noti, err := model.GetByID(id)
+		if err != nil {
+			log.Fatal("Something wrong during get task", err)
+		}
+
+		fmt.Println(expect)
+		fmt.Println(noti.Tasks[0])
+		if !reflect.DeepEqual(expect, noti.Tasks[0]) {
+			t.Error("Get by id fail")
+		}
 	})
-
 }
 
 func TestGetByDate(t *testing.T) {
-	tc := []struct {
-		Name               string
-		Start              string
-		End                string
-		ExpectedRowsNumber int
-		ExpectedNotiID     []int
-	}{
-		{
-			Name:               "Get by date success: multiple noti",
-			Start:              "2023-12-01",
-			End:                "2023-12-07",
-			ExpectedRowsNumber: 2,
-			ExpectedNotiID:     []int{31, 44},
-		},
+	tc := []model.Task{
+		{Name: "taskA", Date: "3000-01-01", Time: "99-99-01"},
+		{Name: "taskA", Date: "3000-01-02", Time: "99-99-02"},
+		{Name: "taskA", Date: "3000-01-03", Time: "99-99-03"},
+		{Name: "taskA", Date: "3000-01-04", Time: "99-99-04"},
 	}
 
-	t.Run(tc[0].Name, func(t *testing.T) {
-		noti, err := model.GetByDate(tc[0].Start, tc[0].End)
-
-		notiID := []int{}
-
-		for _, n := range noti.Tasks {
-			notiID = append(notiID, n.ID)
+	ids := []int{}
+	for index, tsk := range tc {
+		id, err := model.InsertTask(tsk.Name, tsk.Date, tsk.Time)
+		if err != nil {
+			log.Fatal("Something wrong during insert task", err)
 		}
-		assert.Equalf(t, tc[0].ExpectedRowsNumber, len(noti.Tasks), "Expect %d of  result got %d", tc[0].ExpectedRowsNumber, len(noti.Tasks))
-		assert.Equalf(t, tc[0].ExpectedNotiID, notiID, "Expect result ID %d got %d", tc[0].ExpectedNotiID, notiID)
-		assert.NoError(t, err, "No Error")
+		tc[index].ID = id
+		ids = append(ids, id)
+	}
+
+	del := func() {
+		for _, id := range ids {
+			model.DeleteTask(id)
+		}
+	}
+
+	defer del()
+
+	t.Run(tc[0].Name, func(t *testing.T) {
+		noti, err := model.GetByDate(tc[1].Date, tc[2].Date)
+		if err != nil {
+			log.Fatal("Get by date fail", err)
+		}
+		fmt.Println(noti.Tasks[0])
+		fmt.Println(tc[1])
+		if !reflect.DeepEqual(noti.Tasks[0], tc[1]) {
+			t.Error("get by date fail: first task wrong")
+		}
+		fmt.Println(noti.Tasks[1])
+		fmt.Println(tc[2])
+		if !reflect.DeepEqual(noti.Tasks[1], tc[2]) {
+			t.Error("get by date fail: second task wrong")
+		}
 	})
 }
 
 func TestGetByName(t *testing.T) {
-	tc := []struct {
-		Name           string
-		pattern        string
-		expectedResult model.TaskGroup
-	}{
-		{
-			Name:    "pattern match",
-			pattern: "จัด",
-			expectedResult: model.TaskGroup{
-				Start: "",
-				End:   "",
-				Tasks: []model.Task{
-					{
-						ID:   32,
-						Name: "จัดทำแผนพัฒนาการศึกษา",
-						Date: "2024-02-05",
-						Time: "10:00:30",
-					},
-					{
-						ID:   44,
-						Name: "ทำงาน1",
-						Date: "2023-12-07",
-						Time: "09:00:00",
-					},
-				},
-			},
-		},
+	expect := model.Task{
+		Name: "ไก่จิกเด็กตายบนปากโอ่ง",
+		Date: "2023-12-30",
+		Time: "22:48:52",
 	}
-	t.Run(tc[0].Name, func(t *testing.T) {
-		group, err := model.GetByName(tc[0].pattern)
+
+	id, err := model.InsertTask(expect.Name, expect.Date, expect.Time)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	expect.ID = id
+
+	defer model.DeleteTask(id)
+
+	t.Run("get by name", func(t *testing.T) {
+		group, err := model.GetByName("บนปาก")
 		if err != nil {
 			log.Fatal(err)
 		}
-		assert.Equal(t, tc[0].expectedResult.Tasks, group.Tasks, "Expected %q got %q", tc[0].expectedResult.Tasks, group.Tasks)
+		fmt.Println("expect:", expect)
+		fmt.Println("result:", group.Tasks[0])
+		if !reflect.DeepEqual(expect, group.Tasks[0]) {
+			t.Error("get by name fail")
+		}
+	})
+}
+
+func TestUpdateTask(t *testing.T) {
+	task := model.Task{
+		Name: "task1",
+		Date: "2024-01-01",
+		Time: "12:00:00",
+	}
+	id, err := model.InsertTask(task.Name, task.Date, task.Time)
+	if err != nil {
+		fmt.Println("Something wrong during insert task", err)
+	}
+
+	task.ID = id
+	defer model.DeleteTask(id)
+
+	expect := []model.Task{
+		{id, "task2", "2024-01-01", "12:00:00"},
+		{id, "task1", "2024-01-30", "12:00:00"},
+		{id, "task1", "2024-01-01", "23:00:00"},
+	}
+	err = model.UpdateTask(id, expect[0].Name, expect[0].Date, expect[0].Time)
+	if err != nil {
+		fmt.Println("Update Name fail: ", err)
+	}
+
+	result, err := model.GetByID(id)
+	if err != nil {
+		fmt.Println("Something wrong during get task", err)
+	}
+
+	t.Run("update name", func(t *testing.T) {
+
+		fmt.Println("expect:", expect[0])
+		fmt.Println("result:", result.Tasks[0])
+		if !reflect.DeepEqual(expect[0], result.Tasks[0]) {
+			t.Error("update name fail")
+		}
 	})
 }

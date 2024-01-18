@@ -74,10 +74,10 @@ func DeleteTask(id int) error {
 	return nil
 }
 
-func UpdateTask(taskId int, taskName, date, time string) (bool, error) {
+func UpdateTask(taskId int, taskName, date, time string) error {
 	group, err := GetByID(taskId)
 	if err != nil {
-		return false, err
+		return err
 	}
 	task := group.Tasks[0]
 
@@ -91,15 +91,17 @@ func UpdateTask(taskId int, taskName, date, time string) (bool, error) {
 		task.Time = time
 	}
 
-	result, err := db.Exec(`UPDATE notify SET id=? taskname=? date=? time=? WHERE id=?;`, taskId, task.Name, task.Date, task.Time)
+	result, err := db.Exec(`UPDATE notify 
+							SET taskname=?, date=?, time=? 
+							WHERE id=?;`, task.Name, task.Date, task.Time, task.ID)
 	if err != nil {
-		return false, err
+		return err
 	}
 	n, err := result.RowsAffected()
 	if err == nil && n > 0 {
-		return true, nil
+		return nil
 	} else {
-		return false, err
+		return err
 	}
 
 }
