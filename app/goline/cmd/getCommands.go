@@ -37,7 +37,7 @@ var getCmd = &cobra.Command{
 			if err != nil {
 				log.Fatalln("Something wrong with query data")
 			}
-			s := notification.Format(tasks)
+			s := notification.Format(tasks, "")
 			fmt.Print(s)
 		}
 
@@ -47,7 +47,7 @@ var getCmd = &cobra.Command{
 			if err != nil {
 				log.Fatalln("Something wrong with query data")
 			}
-			s := notification.Format(tasks)
+			s := notification.Format(tasks, "")
 			fmt.Print(s)
 		}
 		// Case Date Flag
@@ -56,7 +56,7 @@ var getCmd = &cobra.Command{
 			if err != nil {
 				log.Fatalln("Something wrong with query data")
 			}
-			s := notification.Format(tasks)
+			s := notification.Format(tasks, "")
 			fmt.Print(s)
 		}
 		// Case All Flag
@@ -65,7 +65,7 @@ var getCmd = &cobra.Command{
 			if err != nil {
 				log.Fatalln("Something wrong with query data: ", err)
 			}
-			s := notification.Format(tasks)
+			s := notification.Format(tasks, "")
 			fmt.Print(s)
 		}
 	},
@@ -76,7 +76,7 @@ func init() {
 	var id string
 	getCmd.Flags().StringVarP(&id, "id", "i", "", "return a task by id")
 	var name string
-	getCmd.Flags().StringVarP(&name, "namr", "n", "", "return a task by id")
+	getCmd.Flags().StringVarP(&name, "name", "n", "", "return a task by id")
 	var date string
 	getCmd.Flags().StringVarP(&date, "date", "d", "", "return a task by id")
 	var all string

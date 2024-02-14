@@ -45,8 +45,10 @@ var updateCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(updateCmd)
-	updateCmd.Flags().String("name", "", "use name as operation criteria")
-	updateCmd.Flags().String("date", "", "use date as operation criteria")
-	updateCmd.Flags().String("time", "", "use time as operation criteria")
-
+	var name string
+	updateCmd.Flags().StringVarP(&name, "name", "n", "", "update a task by name")
+	var date string
+	updateCmd.Flags().StringVarP(&date, "date", "d", "", "update a task by name")
+	var time string
+	updateCmd.Flags().StringVarP(&time, "time", "t", "", "update a task by name")
 }
