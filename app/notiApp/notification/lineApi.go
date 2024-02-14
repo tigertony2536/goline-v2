@@ -7,8 +7,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/tigertony2536/goline/config"
-	"github.com/tigertony2536/goline/model"
+	"github.com/tigertony2536/goline-v2/config"
 )
 
 var (
@@ -21,9 +20,9 @@ func init() {
 	secret = config.GetSecretConfig()
 }
 
-func SendToLineApi(noti model.TaskGroup) (string, error) {
+func SendToLineApi(notiString string) (string, error) {
 	v := url.Values{}
-	v.Set("message", Format(noti))
+	v.Set("message", notiString)
 	client := &http.Client{}
 	req, err := http.NewRequest("POST", cfg.Url, strings.NewReader(v.Encode()))
 
@@ -53,8 +52,9 @@ func NotifyTodayTasks() error {
 	if err != nil {
 		return err
 	}
+	notiString := Format(day, "daily")
 	if len(day.Tasks) != 0 {
-		_, err := SendToLineApi(day)
+		_, err := SendToLineApi(notiString)
 		if err != nil {
 			return err
 		}
@@ -67,8 +67,9 @@ func NotifyWeekTasks() error {
 	if err != nil {
 		return err
 	}
+	notiString := Format(week, "weekly")
 	if len(week.Tasks) != 0 {
-		_, err := SendToLineApi(week)
+		_, err := SendToLineApi(notiString)
 		if err != nil {
 			return err
 		}

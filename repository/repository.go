@@ -1,4 +1,4 @@
-package model
+package repository
 
 import (
 	"database/sql"
@@ -6,7 +6,7 @@ import (
 	"log"
 
 	_ "github.com/mattn/go-sqlite3"
-	"github.com/tigertony2536/goline/config"
+	"github.com/tigertony2536/goline-v2/config"
 )
 
 var (
@@ -48,8 +48,8 @@ func GetDB(sc string) *DB {
 	return &DB{db}
 }
 
-func InsertTask(taskName, date, time string) (int, error) {
-	result, err := db.Exec(`INSERT INTO notify(taskname, date, time) VALUES(?,?,?);`, taskName, date, time)
+func CreateTask(task Task) (int, error) {
+	result, err := db.Exec(`INSERT INTO notify(taskname, date, time) VALUES(?,?,?);`, task.Name, task.Date, task.Time)
 	if err != nil {
 		return 0, err
 	}

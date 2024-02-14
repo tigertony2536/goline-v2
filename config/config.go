@@ -2,25 +2,40 @@ package config
 
 import (
 	"log"
+	"path/filepath"
+	"runtime"
 
 	"github.com/spf13/viper"
 )
 
-type Secret struct {
-	// Token     string `mapstructure:"token"`
-	LineToken string `mapstructure:"lineToken"`
-}
+var (
+	_, b, _, _ = runtime.Caller(0)
+	basepath   = filepath.Dir(b)
+)
 
-type AppConfig struct {
-	DB             string `mapstructure:"database"`
-	Url            string `mapstructure:"linenotifyUrl"`
-	DailyNotiTime  string `mapstructure:"dailyNotiTime"`
-	WeeklyNotiDate string `mapstructure:"weeklyNotiDate"`
-	WeeklyNotiTime string `mapstructure:"weeklyNotiTime"`
-}
+type (
+	Config struct {
+		Secret    *Secret
+		AppConfig *AppConfig
+	}
+
+	Secret struct {
+		// Token     string `mapstructure:"token"`
+		LineToken string `mapstructure:"lineToken"`
+	}
+
+	AppConfig struct {
+		DB             string `mapstructure:"database"`
+		Url            string `mapstructure:"linenotifyUrl"`
+		DailyNotiTime  string `mapstructure:"dailyNotiTime"`
+		WeeklyNotiDate string `mapstructure:"weeklyNotiDate"`
+		WeeklyNotiTime string `mapstructure:"weeklyNotiTime"`
+		ConfigDir      string
+	}
+)
 
 func GetSecretConfig() Secret {
-	viper.AddConfigPath("D:\\dev\\go\\goline\\config")
+	viper.AddConfigPath(basepath)
 	viper.SetConfigName("secret")
 	viper.SetConfigType("yaml")
 
@@ -36,7 +51,7 @@ func GetSecretConfig() Secret {
 }
 
 func GetAppConfig() AppConfig {
-	viper.AddConfigPath("D:\\dev\\go\\goline\\config")
+	viper.AddConfigPath(basepath)
 	viper.SetConfigName("appConfig")
 	viper.SetConfigType("yaml")
 
